@@ -887,8 +887,6 @@ static inline void __lzs_f16cx4_store(ggml_fp16_t * x, __vector float y) {
 
 #include <riscv_vector.h>
 
-#define GGML_SIMD
-
 #define GGML_F32_STEP 64      // 每 batch 處理 64 元素
 #define GGML_F32_EPR  32       // LMUL=4, float32, VLEN=256bit => (256/32)*4=32
 

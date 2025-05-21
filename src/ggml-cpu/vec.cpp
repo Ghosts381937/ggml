@@ -15,10 +15,9 @@ void ggml_vec_dot_f32(int n, float * GGML_RESTRICT s, size_t bs, const float * G
     GGML_UNUSED(by);
     GGML_UNUSED(bs);
  
- #if defined(GGML_SIMD)
+ #if defined(__riscv_v_intrinsic)
      float sumf = 0.0f;
      const int np = (n & ~(GGML_F32_STEP - 1));
- #if defined(__riscv_v_intrinsic)
      GGML_F32_VEC sum0 = GGML_F32_VEC_ZERO;
      GGML_F32_VEC sum1 = GGML_F32_VEC_ZERO;
  
@@ -42,8 +41,11 @@ void ggml_vec_dot_f32(int n, float * GGML_RESTRICT s, size_t bs, const float * G
      // leftovers
      for (int i = np; i < n; ++i) {
          sumf += x[i] * y[i];
-     }                        
- #else
+     }  
+#endif
+#if defined(GGML_SIMD)        
+     float sumf = 0.0f;
+     const int np = (n & ~(GGML_F32_STEP - 1));              
      GGML_F32_VEC sum[GGML_F32_ARR] = { GGML_F32_VEC_ZERO };
  
      GGML_F32_VEC ax[GGML_F32_ARR];
@@ -65,7 +67,6 @@ void ggml_vec_dot_f32(int n, float * GGML_RESTRICT s, size_t bs, const float * G
      for (int i = np; i < n; ++i) {
          sumf += x[i]*y[i];
      }
- #endif
  #else
      // scalar
      ggml_float sumf = 0.0;
