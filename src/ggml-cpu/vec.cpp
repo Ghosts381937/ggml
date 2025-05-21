@@ -27,11 +27,11 @@ void ggml_vec_dot_f32(int n, float * GGML_RESTRICT s, size_t bs, const float * G
      for (int i = 0; i < np; i += GGML_F32_STEP) {
          ax0 = GGML_F32_VEC_LOAD(x + i + 0*GGML_F32_EPR);
          ay0 = GGML_F32_VEC_LOAD(y + i + 0*GGML_F32_EPR);
-         ax0 = GGML_F32_VEC_LOAD(x + i + 1*GGML_F32_EPR);
-         ay0 = GGML_F32_VEC_LOAD(y + i + 1*GGML_F32_EPR);
+         ax1 = GGML_F32_VEC_LOAD(x + i + 1*GGML_F32_EPR);
+         ay1 = GGML_F32_VEC_LOAD(y + i + 1*GGML_F32_EPR);
  
          sum0 = GGML_F32_VEC_FMA(sum0, ax0, ay0);
-         sum1 = GGML_F32_VEC_FMA(sum1, ax0, ay0);
+         sum1 = GGML_F32_VEC_FMA(sum1, ax1, ay1);
      }
  
      float tmp;
@@ -42,8 +42,7 @@ void ggml_vec_dot_f32(int n, float * GGML_RESTRICT s, size_t bs, const float * G
      for (int i = np; i < n; ++i) {
          sumf += x[i] * y[i];
      }  
-#endif
-#if defined(GGML_SIMD)        
+#elif defined(GGML_SIMD)        
      float sumf = 0.0f;
      const int np = (n & ~(GGML_F32_STEP - 1));              
      GGML_F32_VEC sum[GGML_F32_ARR] = { GGML_F32_VEC_ZERO };
