@@ -314,17 +314,18 @@ int main(void)
     passed = true;
     for(int i = 0; i < M * N; i++) {
         if(out_data[i] != expected_result[i]) {
+            printf("out_data[%d] = %.1f, expected_result[%d] = %.1f\n", i, out_data[i], i, expected_result[i]);
             passed = false;
             break;
         }
     }
 
-    for (int i = 0; i < M; i++) {
-        for (int j = 0; j < N; j++) {
-            printf("%.1f ", out_data[i * N + j]);
-        }
-        printf("\n");
-    }
+    // for (int i = 0; i < M; i++) {
+    //     for (int j = 0; j < N; j++) {
+    //         printf("%.1f ", out_data[i * N + j]);
+    //     }
+    //     printf("\n");
+    // }
 
     printf("ggml_mul_mat (%d): %s\n", (int) ggml_nelements(result), passed && (ggml_nelements(result) == M * N) ? "\033[32mPASSED\033[0m" : "\033[31mFAILED\033[0m");
 
