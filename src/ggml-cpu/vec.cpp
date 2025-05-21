@@ -23,7 +23,7 @@ void ggml_vec_dot_f32(int n, float * GGML_RESTRICT s, size_t bs, const float * G
  
      GGML_F32_VEC ax0, ax1;
      GGML_F32_VEC ay0, ay1;
- 
+    printf("np = %d\n", np);
      for (int i = 0; i < np; i += GGML_F32_STEP) {
          ax0 = GGML_F32_VEC_LOAD(x + i + 0*GGML_F32_EPR);
          ay0 = GGML_F32_VEC_LOAD(y + i + 0*GGML_F32_EPR);
