@@ -887,16 +887,33 @@ static inline void __lzs_f16cx4_store(ggml_fp16_t * x, __vector float y) {
 
 #include <riscv_vector.h>
 
-#define GGML_F32_STEP 64      // 每 batch 處理 64 元素
-#define GGML_F32_EPR  32       // LMUL=4, float32, VLEN=256bit => (256/32)*4=32
+// #define GGML_F32_STEP 64      // 每 batch 處理 64 元素
+// #define GGML_F32_EPR  32       // LMUL=4, float32, VLEN=256bit => (256/32)*4=32
 
-// RVV SIMD 定義 for LMUL=4 (vfloat32m4_t)
-#define GGML_F32_VEC            vfloat32m4_t
-#define GGML_F32_VEC_ZERO       __riscv_vfmv_v_f_f32m4(0.0f, GGML_F32_EPR)
-#define GGML_F32_VEC_LOAD(p)    __riscv_vle32_v_f32m4(p, GGML_F32_EPR)
-#define GGML_F32_VEC_FMA(a, b, c) __riscv_vfmacc_vv_f32m4(a, b, c, GGML_F32_EPR)
+// // RVV SIMD 定義 for LMUL=4 (vfloat32m4_t)
+// #define GGML_F32_VEC            vfloat32m4_t
+// #define GGML_F32_VEC_ZERO       __riscv_vfmv_v_f_f32m4(0.0f, GGML_F32_EPR)
+// #define GGML_F32_VEC_LOAD(p)    __riscv_vle32_v_f32m4(p, GGML_F32_EPR)
+// #define GGML_F32_VEC_FMA(a, b, c) __riscv_vfmacc_vv_f32m4(a, b, c, GGML_F32_EPR)
+// #define GGML_F32_VEC_REDUCE(res, v) do { \
+//     vfloat32m1_t _sum = __riscv_vfredosum_vs_f32m4_f32m1( \
+//         v, \
+//         __riscv_vfmv_v_f_f32m1(0.0f, 1), \
+//         GGML_F32_EPR \
+//     ); \
+//     res = __riscv_vfmv_f_s_f32m1_f32(_sum); \
+// } while (0)
+
+#define GGML_F32_STEP 32      // 每 batch 處理 64 元素
+#define GGML_F32_EPR  16       // LMUL=2, float32, VLEN=256bit => (256/32)*2=16
+
+// RVV SIMD 定義 for LMUL=2 (vfloat32m2_t)
+#define GGML_F32_VEC            vfloat32m2_t
+#define GGML_F32_VEC_ZERO       __riscv_vfmv_v_f_f32m2(0.0f, GGML_F32_EPR)
+#define GGML_F32_VEC_LOAD(p)    __riscv_vle32_v_f32m2(p, GGML_F32_EPR)
+#define GGML_F32_VEC_FMA(a, b, c) __riscv_vfmacc_vv_f32m2(a, b, c, GGML_F32_EPR)
 #define GGML_F32_VEC_REDUCE(res, v) do { \
-    vfloat32m1_t _sum = __riscv_vfredosum_vs_f32m4_f32m1( \
+    vfloat32m1_t _sum = __riscv_vfredosum_vs_f32m2_f32m1( \
         v, \
         __riscv_vfmv_v_f_f32m1(0.0f, 1), \
         GGML_F32_EPR \
