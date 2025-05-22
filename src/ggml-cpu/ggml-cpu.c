@@ -1187,8 +1187,6 @@ static void ggml_compute_forward_mul_mat_one_chunk(
     // broadcast factors
     const int64_t r2 = ne12 / ne02;
     const int64_t r3 = ne13 / ne03;
-    printf("ne00:%lld\n", ne00);
-    printf("type:%d\n", type);
 
 
     //printf("ir0_start = %6lld, ir0_end = %6lld, ir1_start = %6lld, ir1_end = %6lld\n", ir0_start, ir0_end, ir1_start, ir1_end);
