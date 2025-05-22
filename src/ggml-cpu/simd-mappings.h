@@ -905,7 +905,7 @@ static inline void __lzs_f16cx4_store(ggml_fp16_t * x, __vector float y) {
 // } while (0)
 
 #define GGML_F32_STEP 64      // 每 batch 處理 64 元素
-#define GGML_F32_EPR  32       // LMUL=4, float32, VLEN=256bit => (256/32)*2=32
+#define GGML_F32_EPR  32       // LMUL=4, float32, VLEN=256bit => (256/32)*4=32
 
 // RVV SIMD 定義 for LMUL=4 (vfloat32m4_t)
 #define GGML_F32_VEC            vfloat32m4_t

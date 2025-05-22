@@ -154,25 +154,25 @@ void ggml_vec_dot_f16(int n, float * GGML_RESTRICT s, size_t bs, ggml_fp16_t * G
     const int np = (n & ~(GGML_F16_STEP - 1));
     GGML_F16_VEC sum0 = GGML_F16_VEC_ZERO;
     GGML_F16_VEC sum1 = GGML_F16_VEC_ZERO;
-    GGML_F16_VEC ax0, ax1, ay0, ay1;
-
-    for (int i = 0; i < np; i += GGML_F16_STEP) {
-        ax0 = GGML_F16_VEC_LOAD(x + i + 0*GGML_F16_EPR);
-        ay0 = GGML_F16_VEC_LOAD(y + i + 0*GGML_F16_EPR);
-        ax1 = GGML_F16_VEC_LOAD(x + i + 1*GGML_F16_EPR);
-        ay1 = GGML_F16_VEC_LOAD(y + i + 1*GGML_F16_EPR);
+    GGML_F16_VEC ax0, ax1;
+    GGML_F16_VEC ay0, ay1;
+    for (int i = 0; i < np; i += GGML_F32_STEP) {
+        ax0 = GGML_F16_VEC_LOAD(x + i + 0*GGML_F32_EPR);
+        ay0 = GGML_F16_VEC_LOAD(y + i + 0*GGML_F32_EPR);
+        ax1 = GGML_F16_VEC_LOAD(x + i + 1*GGML_F32_EPR);
+        ay1 = GGML_F16_VEC_LOAD(y + i + 1*GGML_F32_EPR);
 
         sum0 = GGML_F16_VEC_FMA(sum0, ax0, ay0);
         sum1 = GGML_F16_VEC_FMA(sum1, ax1, ay1);
     }
 
-    _Float16 tmp;
-    GGML_F16_VEC_REDUCE(tmp, sum0); sumf += GGML_FP16_TO_FP32(tmp);
-    GGML_F16_VEC_REDUCE(tmp, sum1); sumf += GGML_FP16_TO_FP32(tmp);
+    float tmp;
+    GGML_F16_VEC_REDUCE(tmp, sum0); sumf += tmp;
+    GGML_F16_VEC_REDUCE(tmp, sum1); sumf += tmp;
 
-    // 剩餘元素
+    // leftovers
     for (int i = np; i < n; ++i) {
-        sumf += GGML_FP16_TO_FP32(x[i]) * GGML_FP16_TO_FP32(y[i]);
+        sumf += (ggml_float)(GGML_FP16_TO_FP32(x[i])*GGML_FP16_TO_FP32(y[i]));
     }
 #elif defined(GGML_SIMD)
     const int np = (n & ~(GGML_F16_STEP - 1));
