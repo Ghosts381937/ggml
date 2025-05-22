@@ -1,6 +1,7 @@
 #include "vec.h"
 
 #include <cassert>
+#include <time.h>
 
 // precomputed gelu table for f16 (128 KB)
 ggml_fp16_t ggml_table_gelu_f16[1 << 16];
@@ -150,6 +151,7 @@ void ggml_vec_dot_f16(int n, float * GGML_RESTRICT s, size_t bs, ggml_fp16_t * G
     GGML_UNUSED(bs);
 
     ggml_float sumf = 0.0;
+    time_t start = clock();
 #if defined(__riscv_v_intrinsic)
     const int np = (n & ~(GGML_F16_STEP - 1));
     GGML_F16_VEC sum0 = GGML_F16_VEC_ZERO;
@@ -157,10 +159,10 @@ void ggml_vec_dot_f16(int n, float * GGML_RESTRICT s, size_t bs, ggml_fp16_t * G
     GGML_F16_VEC ax0, ax1;
     GGML_F16_VEC ay0, ay1;
     for (int i = 0; i < np; i += GGML_F32_STEP) {
-        ax0 = GGML_F16_VEC_LOAD(x + i + 0*GGML_F32_EPR);
-        ay0 = GGML_F16_VEC_LOAD(y + i + 0*GGML_F32_EPR);
-        ax1 = GGML_F16_VEC_LOAD(x + i + 1*GGML_F32_EPR);
-        ay1 = GGML_F16_VEC_LOAD(y + i + 1*GGML_F32_EPR);
+        ax0 = GGML_F16_VEC_LOAD(x + i + 0*GGML_F16_EPR);
+        ay0 = GGML_F16_VEC_LOAD(y + i + 0*GGML_F16_EPR);
+        ax1 = GGML_F16_VEC_LOAD(x + i + 1*GGML_F16_EPR);
+        ay1 = GGML_F16_VEC_LOAD(y + i + 1*GGML_F16_EPR);
 
         sum0 = GGML_F16_VEC_FMA(sum0, ax0, ay0);
         sum1 = GGML_F16_VEC_FMA(sum1, ax1, ay1);
@@ -205,6 +207,8 @@ void ggml_vec_dot_f16(int n, float * GGML_RESTRICT s, size_t bs, ggml_fp16_t * G
 #endif
 
     *s = sumf;
+    time_t end = clock();
+    printf("ggml_vec_dot_f16: %f seconds\n", (float)(end - start) / CLOCKS_PER_SEC);
 }
 
 void ggml_vec_silu_f32(const int n, float * y, const float * x) {
