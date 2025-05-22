@@ -1211,7 +1211,7 @@ static void ggml_compute_forward_mul_mat_one_chunk(
     // attempt to reduce false-sharing (does not seem to make a difference)
     // 16 * 2, accounting for mmla kernels
     float tmp[32];
-
+    time_t start = ggml_time_us();
     for (int64_t iir1 = ir1_start; iir1 < ir1_end; iir1 += blck_1) {
         for (int64_t iir0 = ir0_start; iir0 < ir0_end; iir0 += blck_0) {
             for (int64_t ir1 = iir1; ir1 < iir1 + blck_1 && ir1 < ir1_end; ir1 += num_rows_per_vec_dot) {
@@ -1253,6 +1253,8 @@ static void ggml_compute_forward_mul_mat_one_chunk(
             }
         }
     }
+    time_t end = ggml_time_us();
+    GGML_PRINT_DEBUG("ggml_compute_forward_mul_mat_one_chunk: %lld us\n", end - start);
 }
 
 static void ggml_compute_forward_mul_mat(

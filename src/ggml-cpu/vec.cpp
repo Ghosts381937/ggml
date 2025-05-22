@@ -1,7 +1,6 @@
 #include "vec.h"
 
 #include <cassert>
-#include <time.h>
 
 // precomputed gelu table for f16 (128 KB)
 ggml_fp16_t ggml_table_gelu_f16[1 << 16];
@@ -151,7 +150,6 @@ void ggml_vec_dot_f16(int n, float * GGML_RESTRICT s, size_t bs, ggml_fp16_t * G
     GGML_UNUSED(bs);
 
     ggml_float sumf = 0.0;
-    time_t start = clock();
 #if defined(__riscv_v_intrinsic)
     const int np = (n & ~(GGML_F16_STEP - 1));
     GGML_F16_VEC sum0 = GGML_F16_VEC_ZERO;
@@ -207,8 +205,6 @@ void ggml_vec_dot_f16(int n, float * GGML_RESTRICT s, size_t bs, ggml_fp16_t * G
 #endif
 
     *s = sumf;
-    time_t end = clock();
-    printf("ggml_vec_dot_f16: %f seconds\n", (float)(end - start) / CLOCKS_PER_SEC);
 }
 
 void ggml_vec_silu_f32(const int n, float * y, const float * x) {
