@@ -921,6 +921,24 @@ static inline void __lzs_f16cx4_store(ggml_fp16_t * x, __vector float y) {
     res = __riscv_vfmv_f_s_f32m1_f32(_sum); \
 } while (0)
 
+#define GGML_F16_STEP 64      // 每 batch 處理 64 元素（你可視 EPR 調整）
+#define GGML_F16_EPR  32      // LMUL=2, float16, VLEN=256bit => (256/16)*2=32
+
+// RVV SIMD 定義 for LMUL=2 (vfloat16m2_t)
+#define GGML_F16_VEC            vfloat16m2_t
+#define GGML_F16_VEC_ZERO       __riscv_vfmv_v_f_f16m2((_Float16)0.0, GGML_F16_EPR)
+#define GGML_F16_VEC_LOAD(p)    __riscv_vle16_v_f16m2(p, GGML_F16_EPR)
+#define GGML_F16_VEC_FMA(a, b, c) __riscv_vfmacc_vv_f16m2(a, b, c, GGML_F16_EPR)
+#define GGML_F16_VEC_REDUCE(res, v) do { \
+    vfloat16m1_t _sum = __riscv_vfredosum_vs_f16m2_f16m1( \
+        v, \
+        __riscv_vfmv_v_f_f16m1((_Float16)0.0, 1), \
+        GGML_F16_EPR \
+    ); \
+    res = __riscv_vfmv_f_s_f16m1_f16(_sum); \
+} while (0)
+
+
 #endif
 
 // GGML_F32_ARR / GGML_F16_ARR
