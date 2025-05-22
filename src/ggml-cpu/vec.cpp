@@ -14,11 +14,9 @@ void ggml_vec_dot_f32(int n, float * GGML_RESTRICT s, size_t bs, const float * G
     GGML_UNUSED(bx);
     GGML_UNUSED(by);
     GGML_UNUSED(bs);
- printf("n: %d\n", n);
  #if defined(__riscv_v_intrinsic)
      float sumf = 0.0f;
      const int np = (n & ~(GGML_F32_STEP - 1));
-     printf("np: %d\n", np);
      GGML_F32_VEC sum0 = GGML_F32_VEC_ZERO;
      GGML_F32_VEC sum1 = GGML_F32_VEC_ZERO;
      GGML_F32_VEC ax0, ax1;
