@@ -1254,7 +1254,7 @@ static void ggml_compute_forward_mul_mat_one_chunk(
         }
     }
     time_t end = ggml_time_us();
-    GGML_PRINT_DEBUG("ggml_compute_forward_mul_mat_one_chunk: %lld us\n", end - start);
+    printf("ggml_compute_forward_mul_mat_one_chunk: %lld us\n", end - start);
 }
 
 static void ggml_compute_forward_mul_mat(
