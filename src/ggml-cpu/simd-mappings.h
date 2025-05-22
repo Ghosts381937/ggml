@@ -939,7 +939,7 @@ static inline vfloat32m4_t __riscv_f16x32_load(const ggml_fp16_t * x) {
 #define GGML_F16_VEC_ZERO       GGML_F32_VEC_ZERO
 #define GGML_F16_VEC_LOAD(p)    __riscv_f16x32_load(p)
 #define GGML_F16_VEC_FMA        GGML_F32_VEC_FMA
-#define GGML_F16_VEC_REDUCE     GGML_F16_VEC_REDUCE
+#define GGML_F16_VEC_REDUCE     GGML_F32_VEC_REDUCE
 
 #endif
 
